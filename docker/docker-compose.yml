@@ -1,0 +1,38 @@
+version: '3'
+services:
+
+  mongo:
+    image: mongo:4.4.16-rc0-focal
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE_NAME}
+    ports:
+      - ${MONGO_DATABASE_PORT}:27017
+    volumes:
+      - mongoVolume:/data/db
+    networks:
+      - TuniTroncNetwork
+
+  tunitronc:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      MONGO_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_DATABASE_NAME: ${MONGO_DATABASE_NAME}
+    depends_on:
+      - mongo
+    ports:
+      - "${APP_PORT}:8080"
+    networks:
+      - TuniTroncNetwork
+
+volumes:
+  mongoVolume:
+
+networks:
+  TuniTroncNetwork:
+     driver: bridge

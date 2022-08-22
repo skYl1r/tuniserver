@@ -1,5 +1,3 @@
 # TuniTroc_BackEnd
-Spring boot + MongoDB + Elasticsearch
+Spring boot + MongoDB
 
-
-for any help contact me : aladinsws@gmail.com

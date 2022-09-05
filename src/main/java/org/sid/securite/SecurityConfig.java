@@ -41,6 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login/**","/inscription/**").permitAll();
 
         http.authorizeRequests().antMatchers("/recherche/**").permitAll();
+        http.authorizeRequests().antMatchers("/actuator/**").permitAll();
 
         http.authorizeRequests().antMatchers("/commenter/**","/saveAnnonce/**","/signalerAnnonce/**").hasAuthority("ABONNE");
         http.authorizeRequests().antMatchers("/supprimerAnnonce/**").hasAuthority("ADMIN");

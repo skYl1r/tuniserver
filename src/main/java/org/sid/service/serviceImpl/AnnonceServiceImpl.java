@@ -79,7 +79,7 @@ public class AnnonceServiceImpl implements AnnonceService {
         Annonce annonce = annonceRepository.findAnnonceById(idAnnonce);
         annonce.setEtatSuppression(false);
         historique.enregistrerGestionAnnonce(ad,annonce,cause,"a supprimé");
-        annonceRepository.save(annonce);
+        annonceRepository.delete(annonce);
         return annonce;
     }
 

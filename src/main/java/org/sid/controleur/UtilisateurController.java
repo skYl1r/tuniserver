@@ -1,11 +1,15 @@
 package org.sid.controleur;
 
 import lombok.Data;
+
+import java.util.Objects;
+
 import org.sid.entite.Utilisateur;
 import org.sid.service.AbonneService;
 import org.sid.service.AdminService;
 import org.sid.service.SuperAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,6 +21,8 @@ public class UtilisateurController {
     private AdminService adminService;
     @Autowired
     private AbonneService abonneService;
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
     @PostMapping("/inscription")
@@ -56,7 +62,10 @@ public class UtilisateurController {
         return superAdminService.retirerAdmin(username);
     }
 
-
+    @PostMapping("/updateUser")
+    public Utilisateur updateUser(@RequestBody Utilisateur user) {
+    	return abonneService.updateUser(user);
+    }
 
 }
 

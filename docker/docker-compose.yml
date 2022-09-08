@@ -15,6 +15,18 @@ services:
     networks:
       - TuniTroncNetwork
 
+  keycloak:
+    image: jboss/keycloak:10.0.0
+    environment:
+      KEYCLOAK_USER: ${KEYCLOAK_USER}
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+    ports:
+      - ${KEYCLOAK_PORT}:8080
+    volumes:
+      - keyCloak:/opt/jboss/keycloak/standalone/data
+    networks:
+      - TuniTroncNetwork
+
   tunitronc:
     build:
       context: ..

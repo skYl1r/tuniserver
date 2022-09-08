@@ -1,20 +1,27 @@
 package org.sid.controleur;
 
-import lombok.Data;
-
-import java.util.Objects;
-
 import org.sid.entite.Utilisateur;
 import org.sid.service.AbonneService;
 import org.sid.service.AdminService;
 import org.sid.service.SuperAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.Data;
 
 @RestController
 public class UtilisateurController {
 
+	public static final String ERROR_MSG_FAVORIS = "Une error c'est produit lors du modification de la list des favoris";
+	
     @Autowired
     private SuperAdminService superAdminService;
     @Autowired
@@ -66,9 +73,31 @@ public class UtilisateurController {
     public Utilisateur updateUser(@RequestBody Utilisateur user) {
     	return abonneService.updateUser(user);
     }
+    
+    @PatchMapping("/addFavoris")
+    public ResponseEntity<String> addFavoris(@RequestParam String id) {
+    	if(abonneService.addFavoris(id)) {
+    		return ResponseEntity.ok().build();
+    	}
+    	return new ResponseEntity<String>(ERROR_MSG_FAVORIS,
+    			HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
+    @PatchMapping("/deleteFavoris")
+    public ResponseEntity<String> deleteFavoris(@RequestParam String id) {
+    	if(abonneService.deleteFavoris(id)) {
+    		return ResponseEntity.ok().build();
+    	}
+    	return new ResponseEntity<String>(ERROR_MSG_FAVORIS,
+    			HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
+    @GetMapping("/isFavoris")
+    public Boolean isFavoris(@RequestParam String id) {
+    	return abonneService.isFavoris(id);
+    }
+    
 }
-
 
 @Data
 class UserForm{

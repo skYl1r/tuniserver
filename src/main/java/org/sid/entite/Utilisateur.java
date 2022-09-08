@@ -4,6 +4,7 @@ package org.sid.entite;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -40,8 +41,8 @@ public class Utilisateur {
     private Collection<String> roles=new ArrayList<>();
 
     @DBRef
-    private Collection<Annonce> annonces=new ArrayList<>();
-    private Collection<String> favoris=new ArrayList<>();
+    private Collection<Annonce> annonces;
+    private Set<String> favoris;
 
     @Override
     public String toString() {

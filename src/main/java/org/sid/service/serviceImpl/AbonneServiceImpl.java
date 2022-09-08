@@ -3,6 +3,7 @@ package org.sid.service.serviceImpl;
 import java.util.Date;
 import java.util.Objects;
 
+import org.sid.dao.AnnonceRepository;
 import org.sid.dao.UtilisateurRepository;
 import org.sid.entite.Utilisateur;
 import org.sid.service.AbonneService;
@@ -13,6 +14,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ import org.springframework.stereotype.Service;
 public class AbonneServiceImpl implements AbonneService {
 	@Autowired
 	private UtilisateurRepository userRepository;
+	@Autowired
+	private AnnonceRepository annonceRepository;
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	@Autowired
@@ -84,6 +88,35 @@ public class AbonneServiceImpl implements AbonneService {
 	
 	private boolean stringValidation(String string) {
 		return Objects.nonNull(string) && !string.isEmpty();
+	}
+
+	@Override
+	public boolean addFavoris(String id) {
+		Objects.requireNonNull(annonceRepository.findById(id));
+		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Utilisateur user = loadUserByUsername(username);
+		boolean added = user.getFavoris().add(id);
+		if(added)
+			userRepository.save(user);
+		return added;
+	}
+	
+	@Override
+	public boolean deleteFavoris(String id) {
+		Objects.requireNonNull(annonceRepository.findById(id));
+		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Utilisateur user = loadUserByUsername(username);
+		boolean removed = user.getFavoris().remove(id);
+		if(removed)
+			userRepository.save(user);
+		return removed;
+	}
+
+	@Override
+	public boolean isFavoris(String id) {
+		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Utilisateur user = loadUserByUsername(username);
+		return user.getFavoris().contains(id);
 	}
 
 }

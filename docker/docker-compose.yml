@@ -44,6 +44,7 @@ services:
 
 volumes:
   mongoVolume:
+  keyCloak:
 
 networks:
   TuniTroncNetwork:

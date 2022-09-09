@@ -1,6 +1,7 @@
 package org.sid.securite;
 
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,9 +17,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 
@@ -41,18 +39,27 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
         else {
 
-            String jwtToken = request.getHeader(SecurityParams.JWT_HEADER_NAME);
-           System.out.println("Token =" + jwtToken);
+           String jwtToken = request.getHeader(SecurityParams.JWT_HEADER_NAME);
+//           System.out.println("Token =" + jwtToken);
             if (jwtToken == null || !jwtToken.startsWith(SecurityParams.HEADER_PREFIX)) {
                 filterChain.doFilter(request, response);
                 return;
             }
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SecurityParams.SECRET)).build();
-            String jwt = jwtToken.substring(SecurityParams.HEADER_PREFIX.length());
-            DecodedJWT decodedJWT = verifier.verify(jwt);
-            System.out.println("JWT= " + jwt);
-            String username = decodedJWT.getSubject();
-            List<String> roles = decodedJWT.getClaims().get("roles").asList(String.class);
+            final JwtValidator validator = new JwtValidator();
+            DecodedJWT token = null;
+            try {
+                token = validator.validate(jwtToken);
+//                System.out.println( "Jwt is valid" );
+            } catch (InvalidParameterException e) {
+                System.out.println( "Jwt is invalid" );
+                throw new InvalidParameterException(e.getMessage());
+            }
+            if(token == null) {
+            	throw new InternalError("Please provide a token");
+            }
+//            System.out.println("JWT= " + token);
+            String username = token.getClaim("preferred_username").asString();
+            List<String> roles = token.getClaims().get("roles").asList(String.class);
             System.out.println("username = " + username);
             System.out.println("roles = " + roles);
             Collection<GrantedAuthority> authorities = new ArrayList<>();
